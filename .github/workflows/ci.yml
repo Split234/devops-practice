@@ -1,16 +1,19 @@
-name: My first CI
+name: My First CI
+
 on: [push]
+
 jobs:
- check-files:
-  runs-on: ubuntu-latest
+  check-files:
+    runs-on: ubuntu-latest
+
     steps:
-      -name: devops-practice
-       uses: actions/checkout@v3
-       -name: proveryam nalichie .txt file
-       run: |
-       echo "spisok txt-file:"
-       ls *.txt || echo "net txt-file v korne perositore"
-       -name: Gotovo
-       run: echo "CI-payplan zavershen yspeshno!"
-       
-      
+    - name: 🔄 Клонируем репозиторий
+      uses: actions/checkout@v3
+
+    - name: 📋 Проверяем наличие .txt файла
+      run: |
+        echo "Список txt-файлов:"
+        ls *.txt || echo "Нет txt-файлов в корне репозитория"
+
+    - name: ✅ Готово
+      run: echo "CI-пайплайн завершён успешно!"
