@@ -1,0 +1,16 @@
+name: My first CI
+on: [push]
+jobs:
+ check-files:
+  runs-on: ubuntu-latest
+    steps:
+      -name: devops-practice
+       uses: actions/checkout@v3
+       -name: proveryam nalichie .txt file
+       run: |
+       echo "spisok txt-file:"
+       ls *.txt || echo "net txt-file v korne perositore"
+       -name: Gotovo
+       run: echo "CI-payplan zavershen yspeshno!"
+       
+      
