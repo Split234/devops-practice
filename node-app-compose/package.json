@@ -1,0 +1,8 @@
+{
+  "name": "docker-node-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "mongodb": "^6.18.0"
+  }
+}
