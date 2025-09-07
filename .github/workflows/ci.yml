@@ -1,0 +1,66 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java: [ '17' ]   # можно добавить '21'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: gradle
+
+      # ----- Gradle -----
+      - name: Gradle build
+        if: hashFiles('**/build.gradle', '**/settings.gradle', '**/build.gradle.kts') != ''
+        run: |
+          ./gradlew --version || true
+          chmod +x gradlew || true
+          ./gradlew clean test build
+
+      # ----- Maven -----
+      - name: Maven build
+        if: hashFiles('**/pom.xml') != ''
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Maven test+package
+        if: hashFiles('**/pom.xml') != ''
+        run: mvn -B -ntp -DskipTests=false clean test package
+
+      # ----- Отчёты тестов (JUnit) -----
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.java }}
+          path: |
+            **/build/test-results/test/*.xml
+            /build/reports/tests/test/
+            /target/surefire-reports/
+            /target/failsafe-reports/
+          if-no-files-found: ignore
